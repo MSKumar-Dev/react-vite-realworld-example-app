@@ -1,5 +1,6 @@
+// @ts-nocheck
 import React from 'react'
-import ReactDOM from 'react-dom'
+import { createRoot } from 'react-dom/client'
 import { QueryClient, QueryClientProvider } from 'react-query'
 import { ReactQueryDevtools } from 'react-query/devtools'
 import { createServer } from 'miragejs'
@@ -7,7 +8,7 @@ import axios from 'axios'
 import App from './App'
 import makeServer from './server'
 
-if (process.env.NODE_ENV === 'production') {
+if (import.meta.env.PROD) {
   axios.defaults.baseURL = 'https://api.realworld.io/api'
 }
 
@@ -25,25 +26,31 @@ const queryClient = new QueryClient({
   },
 })
 
-if (window.Cypress && process.env.NODE_ENV === 'test') {
+if (window.Cypress && import.meta.env.MODE === 'test') {
   const cyServer = createServer({
     routes() {
       ;['get', 'put', 'patch', 'post', 'delete'].forEach((method) => {
-        this[method]('/*', (schema, request) => window.handleFromCypress(request))
+        this[method]('/*', (schema, request) => {
+          if (typeof window['handleFromCypress'] === 'function') {
+            return window['handleFromCypress'](request)
+          }
+          return new Response('window.handleFromCypress not defined', { status: 500 })
+        })
       })
     },
   })
   cyServer.logging = false
-} else if(process.env.NODE_ENV === 'development') {
+} else if (import.meta.env.DEV) {
   makeServer({ environment: 'development' })
 }
 
-ReactDOM.render(
+const container = document.getElementById('root')
+const root = createRoot(container)
+root.render(
   <React.StrictMode>
     <QueryClientProvider client={queryClient}>
       <App />
       <ReactQueryDevtools initialIsOpen={false} containerElement="div" />
     </QueryClientProvider>
-  </React.StrictMode>,
-  document.getElementById('root')
+  </React.StrictMode>
 )

@@ -1,13 +1,11 @@
 import React from 'react'
-import { Navigate, Route } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import { useAuth } from '../hooks'
 
-function AuthRoute(props) {
+function AuthRoute({ element }) {
   const { isAuth } = useAuth()
-
   if (!isAuth) return <Navigate to="/" />
-
-  return <Route {...props} />
+  return element
 }
 
 export default AuthRoute

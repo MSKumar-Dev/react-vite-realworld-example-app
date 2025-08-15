@@ -1,32 +1,35 @@
 import React from 'react'
 import { NavLink } from 'react-router-dom'
 import { useAuth } from '../hooks'
-
 function Navbar() {
   const { isAuth, authUser } = useAuth()
+
+  // Helper for NavLink className
+  const getActiveClass = ({ isActive }) => (isActive ? 'nav-link active' : 'nav-link')
+  const getBrandClass = ({ isActive }) => (isActive ? 'navbar-brand active' : 'navbar-brand')
 
   return (
     <nav className="navbar navbar-light">
       <div className="container">
-        <NavLink activeClassName="active" className="navbar-brand" to="/" end>
+        <NavLink className={getBrandClass} to="/" end>
           conduit
         </NavLink>
         <ul className="nav navbar-nav pull-xs-right">
           <li className="nav-item">
-            <NavLink activeClassName="active" className="nav-link" to="/" end>
+            <NavLink className={getActiveClass} to="/" end>
               Home
             </NavLink>
           </li>
           {isAuth && (
             <>
               <li className="nav-item">
-                <NavLink activeClassName="active" className="nav-link" to="/editor">
+                <NavLink className={getActiveClass} to="/editor">
                   <i className="ion-compose" />
                   &nbsp;New Post
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink activeClassName="active" className="nav-link" to="/settings">
+                <NavLink className={getActiveClass} to="/settings">
                   <i className="ion-gear-a" />
                   &nbsp;Settings
                 </NavLink>
@@ -42,12 +45,12 @@ function Navbar() {
           {!isAuth && (
             <>
               <li className="nav-item">
-                <NavLink activeClassName="active" className="nav-link" to="/register">
+                <NavLink className={getActiveClass} to="/register">
                   Sign up
                 </NavLink>
               </li>
               <li className="nav-item">
-                <NavLink activeClassName="active" className="nav-link" to="/login">
+                <NavLink className={getActiveClass} to="/login">
                   Sign in
                 </NavLink>
               </li>

@@ -20,12 +20,14 @@ import './commands'
 // require('./commands')
 Cypress.on('window:before:load', (win) => {
   // eslint-disable-next-line no-param-reassign
+  // @ts-ignore
   win.handleFromCypress = async (request) => {
     const res = await fetch(request.url, {
       method: request.method,
       body: request.requestBody,
     })
-    if (res.headers.map['content-type'] === 'application/json') {
+    const contentType = res.headers.get('content-type')
+    if (contentType && contentType.includes('application/json')) {
       return res.json()
     }
     return ''
